@@ -1,0 +1,15 @@
+/**
+ * @Route("/api/restore", methods={"POST"})
+ */
+public function restore(Request $request): Response
+{
+    $file = $request->files->get('backup_file');
+    if (!$file) {
+        return new Response('No file provided', Response::HTTP_BAD_REQUEST);
+    }
+
+    $command = 'mysql -u yourusername -p yourpassword yourdbname < ' . $file->getPathname();
+    exec($command);
+
+    return new Response('Database restored successfully');
+}
