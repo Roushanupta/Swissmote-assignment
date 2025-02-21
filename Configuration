@@ -1,0 +1,4 @@
+TWITTER_CONSUMER_KEY=yourconsumerkey
+TWITTER_CONSUMER_SECRET=yoursecretkey
+TWITTER_ACCESS_TOKEN=youraccesstoken
+TWITTER_ACCESS_TOKEN_SECRET=youraccesstokensecret
