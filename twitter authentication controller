@@ -1,0 +1,80 @@
+// src/Controller/TwitterAuthController.php
+
+namespace App\Controller;
+
+use App\Service\TwitterOAuthService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+class TwitterAuthController extends AbstractController
+{
+    private $twitterOAuthService;
+
+    public function __construct(TwitterOAuthService $twitterOAuthService)
+    {
+        $this->twitterOAuthService = $twitterOAuthService;
+    }
+
+    /**
+     * @Route("/auth/twitter", name="twitter_auth")
+     */
+    public function authenticate(): RedirectResponse
+    {
+        $twitterOAuth = $this->twitterOAuthService->getTwitterOAuth();
+        $requestToken = $twitterOAuth->oauth('oauth/request_token', [
+            'oauth_callback' => 'http://yourdomain.com/auth/twitter/callback'
+        ]);
+
+        if (isset($requestToken['oauth_token']) && isset($requestToken['oauth_token_secret'])) {
+            session_start();
+            $_SESSION['oauth_token'] = $requestToken['oauth_token'];
+            $_SESSION['oauth_token_secret'] = $requestToken['oauth_token_secret'];
+
+            $url = $twitterOAuth->url('oauth/authorize', [
+                'oauth_token' => $requestToken['oauth_token']
+            ]);
+            return $this->redirect($url);
+        }
+
+        throw new NotFoundHttpException('Error during Twitter authentication');
+    }
+
+    /**
+     * @Route("/auth/twitter/callback", name="twitter_callback")
+     */
+    public function callback(Request $request): Response
+    {
+        session_start();
+        $oauthToken = $request->query->get('oauth_token');
+        $oauthVerifier = $request->query->get('oauth_verifier');
+
+        if (isset($oauthToken) && isset($oauthVerifier)) {
+            $twitterOAuth = $this->twitterOAuthService->getTwitterOAuth();
+            $twitterOAuth->setOauthToken($_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
+            $accessToken = $twitterOAuth->oauth('oauth/access_token', [
+                'oauth_verifier' => $oauthVerifier
+            ]);
+
+            // You now have access to the user's Twitter account details
+            $userDetails = $twitterOAuth->get('account/verify_credentials');
+            
+            // Store these details in the database
+            // You can now create the user or authenticate an existing user.
+            // You can also store these details in session or token-based authentication.
+            
+            // Example:
+            // $user = new User();
+            // $user->setName($userDetails->name);
+            // $user->setUsername($userDetails->screen_name);
+            // ...
+            
+            return new Response('Twitter authentication successful');
+        }
+
+        return new Response('Authentication failed');
+    }
+}
