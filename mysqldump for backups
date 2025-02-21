@@ -1,0 +1,11 @@
+/**
+ * @Route("/api/backup", methods={"GET"})
+ */
+public function backup(): Response
+{
+    $backupFile = 'backup.sql';
+    $command = 'mysqldump -u yourusername -p yourpassword yourdbname > ' . $backupFile;
+    exec($command);
+
+    return new Response('Backup created successfully');
+}
