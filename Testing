@@ -1,0 +1,12 @@
+  Postman Collection:
+        Create a Postman collection to test the following APIs:
+            /api/upload: POST a CSV file.
+            /api/users: GET all users.
+            /api/backup: GET to backup the database.
+            /api/restore: POST a backup file to restore.
+            /auth/twitter: GET to initiate Twitter authentication.
+            /auth/twitter/callback: GET to handle the OAuth callback.
+
+    Run the Project:
+
+symfony serve
