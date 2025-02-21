@@ -1,0 +1,31 @@
+// src/Service/TwitterOAuthService.php
+
+namespace App\Service;
+
+use Abraham\TwitterOAuth\TwitterOAuth;
+
+class TwitterOAuthService
+{
+    private $consumerKey;
+    private $consumerSecret;
+    private $accessToken;
+    private $accessTokenSecret;
+
+    public function __construct(string $consumerKey, string $consumerSecret, string $accessToken, string $accessTokenSecret)
+    {
+        $this->consumerKey = $consumerKey;
+        $this->consumerSecret = $consumerSecret;
+        $this->accessToken = $accessToken;
+        $this->accessTokenSecret = $accessTokenSecret;
+    }
+
+    public function getTwitterOAuth()
+    {
+        return new TwitterOAuth(
+            $this->consumerKey,
+            $this->consumerSecret,
+            $this->accessToken,
+            $this->accessTokenSecret
+        );
+    }
+}
