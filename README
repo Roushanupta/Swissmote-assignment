@@ -1,0 +1,2 @@
+Ensure that you have properly set up email configuration in config/packages/mailer.yaml for the email notifications.
+Twitter OAuth will work in a real-world environment with actual keys; make sure you test this properly with Twitter's OAuth credentials.
